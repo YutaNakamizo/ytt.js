@@ -1,0 +1,33 @@
+{
+  "name": "ytt.js",
+  "version": "1.0.0",
+  "description": "Parse / Stringify between YouTube Timed Text (YTT) and JSON",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YutaNakamizo/ytt.js.git"
+  },
+  "keywords": [
+    "YouTube Timed Text",
+    "YTT"
+  ],
+  "author": "Yuta NAKAMIZO <yuta.nakamizo@ggtk.app> (https://ggtk.app)",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/YutaNakamizo/ytt.js/issues"
+  },
+  "homepage": "https://github.com/YutaNakamizo/ytt.js#readme",
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "jest": "^27.0.4",
+    "ts-jest": "^27.0.2",
+    "ts-loader": "^9.2.2",
+    "typescript": "^4.3.2",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
