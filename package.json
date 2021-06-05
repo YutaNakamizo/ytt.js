@@ -1,0 +1,44 @@
+{
+  "name": "ytt.js",
+  "version": "1.0.0",
+  "description": "Parse / Stringify between YouTube Timed Text (YTT) and JSON",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "module": "esm/index.js",
+  "files": [
+    "lib",
+    "esm"
+  ],
+  "scripts": {
+    "start": "tsc -p ./config/tsconfig.cjs.json -w",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc -p ./config/tsconfig.cjs.json",
+    "build:esm": "tsc -p ./config/tsconfig.esm.json",
+    "test": "jest",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YutaNakamizo/ytt.js.git"
+  },
+  "keywords": [
+    "YouTube Timed Text",
+    "YTT"
+  ],
+  "author": "Yuta NAKAMIZO <yuta.nakamizo@ggtk.app> (https://ggtk.app)",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/YutaNakamizo/ytt.js/issues"
+  },
+  "homepage": "https://github.com/YutaNakamizo/ytt.js#readme",
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "jest": "^27.0.4",
+    "ts-jest": "^27.0.2",
+    "ts-loader": "^9.2.2",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "@types/node": "^15.12.1"
+  }
+}
