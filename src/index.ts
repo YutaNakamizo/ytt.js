@@ -2,41 +2,32 @@ import {
   v4 as uuidv4,
 } from 'uuid';
 import {
-  YTTPenInterface,
-  YTTWindowStyleInterface,
-  YTTWindowPositionInterface,
-  YTTParagraphInterface,
-  YTTSpanInterface,
-  YTTElementInterface,
   YTTPen,
+  YTTWindowStyle,
+  YTTWindowPosition,
+  YTTParagraph,
+  YTTSpan,
+  YTTElement,
 } from './interfaces';
 
 // YTT Class Member Interfaces
 interface YTTIntermediateFormat {
-  pens: YTTPenInterface[],
-  windowStyles: YTTWindowStyleInterface[],
-  windowPositions: YTTWindowPositionInterface[],
-  paragraphs: YTTParagraphInterface[],
+  pens: YTTPen[],
+  windowStyles: YTTWindowStyle[],
+  windowPositions: YTTWindowPosition[],
+  paragraphs: YTTParagraph[],
 };
 
-export interface YTTIndex {
-  [key: string]: YTTElementInterface,
-};
-
-export interface YTTInterface {
-  pens: YTTPenInterface[],
-  windowStyles: YTTWindowStyleInterface[],
-  windowPositions: YTTWindowPositionInterface[],
-  paragraphs: YTTParagraphInterface[],
-  index: YTTIndex,
+interface YTTIndex {
+  [key: string]: YTTElement,
 };
 
 // YTT Class
-export default class YTT implements YTTInterface {
-  pens: YTTPenInterface[];
-  windowStyles: YTTWindowStyleInterface[];
-  windowPositions: YTTWindowPositionInterface[];
-  paragraphs: YTTParagraphInterface[];
+export default class YTT {
+  pens: YTTPen[];
+  windowStyles: YTTWindowStyle[];
+  windowPositions: YTTWindowPosition[];
+  paragraphs: YTTParagraph[];
   index: YTTIndex = {};
 
   constructor(intermediate?: YTTIntermediateFormat) {
@@ -50,7 +41,7 @@ export default class YTT implements YTTInterface {
         ...this.windowStyles,
         ...this.windowPositions,
         ...this.paragraphs,
-        ...this.paragraphs.map((p: YTTParagraphInterface) => {
+        ...this.paragraphs.map((p: YTTParagraph) => {
           return p.children;
         }).flat(),
       ]) {
@@ -66,32 +57,32 @@ export default class YTT implements YTTInterface {
     }
   }
 
-  add(element: YTTElementInterface): YTTInterface {
+  add(element: YTTElement): YTT {
     return this;
   }
 
-  addPen(pen: YTTPenInterface): YTTInterface {
+  addPen(pen: YTTPen): YTT {
     this.pens.push(pen);
     const uuid = pen.uuid || uuidv4();
     this.index[uuid] = pen;
     return this;
   }
 
-  addWindowStyle(windowStyle: YTTWindowStyleInterface): YTTInterface {
+  addWindowStyle(windowStyle: YTTWindowStyle): YTT {
     this.windowStyles.push(windowStyle);
     const uuid = windowStyle.uuid || uuidv4();
     this.index[uuid] = windowStyle;
     return this;
   }
 
-  addWindowPosition(windowPosition: YTTWindowPositionInterface): YTTInterface {
+  addWindowPosition(windowPosition: YTTWindowPosition): YTT {
     this.windowPositions.push(windowPosition);
     const uuid = windowPosition.uuid || uuidv4();
     this.index[uuid] = windowPosition;
     return this;
   }
 
-  addParagraph(paragraph: YTTParagraphInterface): YTTInterface {
+  addParagraph(paragraph: YTTParagraph): YTT {
     this.paragraphs.push(paragraph);
     const uuid = paragraph.uuid || uuidv4();
     this.index[uuid] = paragraph;

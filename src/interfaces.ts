@@ -1,17 +1,15 @@
 import {
   v4 as uuidv4,
 } from 'uuid';
-import {
-  YTTInterface
-} from './index';
+import YTT from './index';
 
 // YTT Document Types
 export type YTTElementInterface = YTTPenInterface | YTTWindowStyleInterface | YTTWindowPositionInterface | YTTParagraphInterface | YTTSpanInterface;
-export const YTTElement = class {
+export class YTTElement {
   uuid: string;
-  parentDocument: YTTInterface;
+  parentDocument: YTT;
 
-  constructor(initParams: YTTElementInterface, parentDocument: YTTInterface) {
+  constructor(initParams: YTTElementInterface, parentDocument: YTT) {
     Object.assign(this, initParams);
     this.uuid = uuidv4();
     this.parentDocument = parentDocument;
@@ -19,7 +17,7 @@ export const YTTElement = class {
 };
 
 // YTT Header Interfaces
-export interface YTTPenInterface {
+interface YTTPenInterface {
   type: 'ytt#pen',
   uuid?: string,
   bold: boolean,
@@ -38,7 +36,7 @@ export interface YTTPenInterface {
   textEnphasis: number,
   textCombinations: boolean,
 };
-export const YTTPen = class extends YTTElement implements YTTPenInterface {
+export class YTTPen extends YTTElement {
   type:'ytt#pen' = 'ytt#pen';
   uuid: string = '';
   bold: boolean = false;
@@ -57,51 +55,51 @@ export const YTTPen = class extends YTTElement implements YTTPenInterface {
   textEnphasis: number = 0;
   textCombinations: boolean = false;
 
-  constructor(initParams: YTTPenInterface, parentDocument: YTTInterface) {
+  constructor(initParams: YTTPenInterface, parentDocument: YTT) {
     super(initParams, parentDocument);
   }
 };
 
-export interface YTTWindowStyleInterface {
+interface YTTWindowStyleInterface {
   type: 'ytt#windowStyle',
   uuid?: string,
   justify: 'vertical' | 'horizontal',
   printDirection: number,
   scrollDirection: number,
 };
-export const YTTWindowStyle = class extends YTTElement implements YTTWindowStyleInterface {
+export class YTTWindowStyle extends YTTElement {
   type: 'ytt#windowStyle' = 'ytt#windowStyle';
   uuid: string = '';
   justify: 'vertical' | 'horizontal' = 'horizontal';
   printDirection: number = 0;
   scrollDirection: number = 0;
 
-  constructor(initParams: YTTWindowStyleInterface, parentDocument: YTTInterface) {
+  constructor(initParams: YTTWindowStyleInterface, parentDocument: YTT) {
     super(initParams, parentDocument);
   }
 };
 
-export interface YTTWindowPositionInterface {
+interface YTTWindowPositionInterface {
   type: 'ytt#windowPosition',
   uuid?: string,
   anchorPoint: number,
   anchorHorizontal: number,
   anchorVertical: number,
 };
-export const YTTWindowPosition = class extends YTTElement implements YTTWindowPositionInterface {
+export class YTTWindowPosition extends YTTElement {
   type: 'ytt#windowPosition' = 'ytt#windowPosition';
   uuid: string = '';
   anchorPoint: number = 7;
   anchorHorizontal: number = 50;
   anchorVertical: number = 100;
   
-  constructor(initParams: YTTWindowStyleInterface, parentDocument: YTTInterface) {
+  constructor(initParams: YTTWindowStyleInterface, parentDocument: YTT) {
     super(initParams, parentDocument);
   }
 };
 
 // YTT Body Interfaces
-export interface YTTParagraphInterface {
+interface YTTParagraphInterface {
   type: 'ytt#paragraph',
   uuid?: string,
   startTime: number,
@@ -111,7 +109,7 @@ export interface YTTParagraphInterface {
   windowPositionUuid: string,
   children: YTTSpanInterface[],
 };
-export const YTTParagraph = class extends YTTElement implements YTTParagraphInterface {
+export class YTTParagraph extends YTTElement {
   type: 'ytt#paragraph' = 'ytt#paragraph';
   uuid: string = '';
   startTime: number = 0;
@@ -119,13 +117,13 @@ export const YTTParagraph = class extends YTTElement implements YTTParagraphInte
   penUuid: string = '';
   windowStyleUuid: string = '';
   windowPositionUuid: string = '';
-  children: YTTSpanInterface[] = [];
+  children: YTTSpan[] = [];
 
-  constructor(initParams: YTTParagraphInterface, parentDocument: YTTInterface) {
+  constructor(initParams: YTTParagraphInterface, parentDocument: YTT) {
     super(initParams, parentDocument);
   }
 
-  addSpan(span: YTTSpanInterface): YTTParagraphInterface {
+  addSpan(span: YTTSpan): YTTParagraph {
     this.children.push(span);
     const uuid = span.uuid || uuidv4();
     this.parentDocument.index[uuid] = span;
@@ -133,7 +131,7 @@ export const YTTParagraph = class extends YTTElement implements YTTParagraphInte
   }
 };
 
-export interface YTTSpanInterface {
+interface YTTSpanInterface {
   type: 'ytt#span',
   uuid?: string,
   startTime: number,
@@ -142,7 +140,7 @@ export interface YTTSpanInterface {
   windowStyleUuid: string,
   windowPositionUuid: string,
 };
-export const YTTSpan = class extends YTTElement implements YTTSpanInterface {
+export class YTTSpan  extends YTTElement implements YTTSpanInterface {
   type: 'ytt#span' = 'ytt#span';
   uuid: string = '';
   startTime: number = 0;
@@ -151,7 +149,7 @@ export const YTTSpan = class extends YTTElement implements YTTSpanInterface {
   windowStyleUuid: string = '';
   windowPositionUuid: string = '';
 
-  constructor(initParams: YTTSpanInterface, parentDocument: YTTInterface) {
+  constructor(initParams: YTTSpanInterface, parentDocument: YTT) {
     super(initParams, parentDocument);
   }
 };
