@@ -2,22 +2,32 @@ import {
   v4 as uuidv4,
 } from 'uuid';
 import {
-  YTTPen,
-  YTTWindowStyle,
-  YTTWindowPosition,
-  YTTParagraph,
-  YTTSpan,
-  YTTElement,
-  YTTIntermediateFormat,
-  YTTIndex,
+  YTTPenInterface,
+  YTTWindowStyleInterface,
+  YTTWindowPositionInterface,
+  YTTParagraphInterface,
+  YTTSpanInterface,
+  YTTElementInterface,
 } from './interfaces';
+
+// YTT Class Member Interfaces
+interface YTTIntermediateFormat {
+  pens: YTTPenInterface[],
+  windowStyles: YTTWindowStyleInterface[],
+  windowPositions: YTTWindowPositionInterface[],
+  paragraphs: YTTParagraphInterface[],
+};
+
+export interface YTTIndex {
+  [key: string]: YTTElementInterface,
+};
 
 // YTT Class
 export default class YTT {
-  private pens: YTTPen[];
-  private windowStyles: YTTWindowStyle[];
-  private windowPositions: YTTWindowPosition[];
-  private paragraphs: YTTParagraph[];
+  private pens: YTTPenInterface[];
+  private windowStyles: YTTWindowStyleInterface[];
+  private windowPositions: YTTWindowPositionInterface[];
+  private paragraphs: YTTParagraphInterface[];
   private index: YTTIndex = {};
 
   constructor(intermediate?: YTTIntermediateFormat) {
@@ -31,12 +41,11 @@ export default class YTT {
         ...this.windowStyles,
         ...this.windowPositions,
         ...this.paragraphs,
-        ...this.paragraphs.map((p: YTTParagraph) => {
+        ...this.paragraphs.map((p: YTTParagraphInterface) => {
           return p.children;
         }).flat(),
       ]) {
-        const uuid = uuidv4();
-        el.uuid = uuid;
+        const uuid = el.uuid || uuidv4();
         this.index[uuid] = el;
       }
     }
