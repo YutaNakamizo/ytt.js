@@ -18,4 +18,14 @@ export class YTTWindowStyle extends YTTHeadElement {
   constructor(initParams: YTTWindowStyleInterface, parentDocument: YTT) {
     super(initParams, parentDocument);
   }
+
+  export(): YTTWindowStyleInterface {
+    return {
+      type: 'ytt#windowStyle',
+      uuid: this.uuid,
+      justify: this.justify,
+      printDirection: this.printDirection,
+      scrollDirection: this.scrollDirection,
+    };
+  }
 };

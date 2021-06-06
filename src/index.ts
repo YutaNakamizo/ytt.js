@@ -162,4 +162,21 @@ export default class YTT {
   addParagraph(paragraph: YTTParagraph): YTT {
     return this.addBody<YTTParagraph>(paragraph, this.paragraphs);
   }
+
+  export(): YTTIntermediateFormat {
+    return {
+      pens: this.pens.map((pen: YTTPen): YTTPenInterface => {
+        return pen.export();
+      }),
+      windowStyles: this.windowStyles.map((windowStyle: YTTWindowStyle): YTTWindowStyleInterface => {
+        return windowStyle.export();
+      }),
+      windowPositions: this.windowPositions.map((windowPosition: YTTWindowPosition): YTTWindowPositionInterface => {
+        return windowPosition.export();
+      }),
+      paragraphs: this.paragraphs.map((paragraph: YTTParagraph): YTTParagraphInterface => {
+        return paragraph.export();
+      }),
+    };
+  }
 };

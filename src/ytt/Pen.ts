@@ -43,4 +43,26 @@ export class YTTPen extends YTTHeadElement {
   constructor(initParams: YTTPenInterface, parentDocument: YTT) {
     super(initParams, parentDocument);
   }
+
+  export(): YTTPenInterface {
+    return {
+      type: 'ytt#pen',
+      uuid: this.uuid,
+      bold: this.bold,
+      italic: this.italic,
+      underline: this.underline,
+      fontColor: this.fontColor,
+      fontOpacity: this.fontOpacity,
+      backgroundColor: this.backgroundColor,
+      backgroudOpacity: this.backgroudOpacity,
+      edgeColor: this.edgeColor,
+      edgeType: this.edgeType,
+      fontStyle: this.fontStyle,
+      fontSize: this.fontSize,
+      ruby: this.ruby,
+      offset: this.offset,
+      textEnphasis: this.textEnphasis,
+      textCombinations: this.textCombinations,
+    };
+  }
 };

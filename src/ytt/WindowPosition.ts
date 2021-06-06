@@ -18,4 +18,14 @@ export class YTTWindowPosition extends YTTHeadElement {
   constructor(initParams: YTTWindowPositionInterface, parentDocument: YTT) {
     super(initParams, parentDocument);
   }
+
+  export(): YTTWindowPositionInterface {
+    return {
+      type: 'ytt#windowPosition',
+      uuid: this.uuid,
+      anchorPoint: this.anchorPoint,
+      anchorHorizontal: this.anchorHorizontal,
+      anchorVertical: this.anchorVertical,
+    };
+  }
 };

@@ -12,9 +12,21 @@ export interface YTTSpanInterface {
   windowPositionUuid: string,
 };
 export class YTTSpan  extends YTTBodyElement {
-  public readonly type: 'ytt#span' = 'ytt#span';
+  public readonly type: string = 'ytt#span';
 
   constructor(initParams: YTTSpanInterface, parentDocument: YTT) {
     super(initParams, parentDocument);
+  }
+
+  export(): YTTSpanInterface {
+    return {
+      type: 'ytt#span',
+      uuid: this.uuid,
+      startTime: this.startTime,
+      duration: this.duration,
+      penUuid: this.penUuid,
+      windowStyleUuid: this.windowStyleUuid,
+      windowPositionUuid: this.windowPositionUuid,
+    };
   }
 };
