@@ -1,21 +1,78 @@
+import assert from 'assert';
 import {
   v4 as uuidv4,
 } from 'uuid';
 import {
   YTTPen,
+  YTTPenInterface,
+} from './ytt/Pen';
+import {
   YTTWindowStyle,
+  YTTWindowStyleInterface,
+} from './ytt/WindowStyle';
+import {
   YTTWindowPosition,
+  YTTWindowPositionInterface,
+} from './ytt/WindowPosition';
+import {
   YTTParagraph,
+  YTTParagraphInterface,
+} from './ytt/Paragraph';
+import {
   YTTSpan,
-  YTTElement,
-} from './interfaces';
+  YTTSpanInterface,
+} from './ytt/Span';
+import { runInThisContext } from 'vm';
+
+// YTT Element
+export class YTTElement {
+  public readonly type: string = 'ytt#element';
+  public readonly uuid: string;
+  public readonly parentDocument: YTT;
+
+  constructor(
+    initParams: YTTPenInterface | YTTWindowStyleInterface | YTTWindowPositionInterface | YTTParagraphInterface | YTTSpanInterface,
+    parentDocument: YTT
+  ) {
+    Object.assign(this, initParams);
+    this.uuid = uuidv4();
+    this.parentDocument = parentDocument;
+  }
+};
+
+export class YTTHeadElement extends YTTElement {
+  public readonly type: string = 'ytt#headElement';
+
+  constructor(
+    initParams: YTTPenInterface | YTTWindowStyleInterface | YTTWindowPositionInterface,
+    parentDocument: YTT
+  ) {
+    super(initParams, parentDocument);
+  }
+}
+
+export class YTTBodyElement extends YTTElement {
+  public readonly type: string = 'ytt#bodyElement';
+  public readonly startTime: number = 0;
+  public readonly duration: number = 0;
+  public readonly penUuid: string = '';
+  public readonly windowStyleUuid: string = '';
+  public readonly windowPositionUuid: string = '';
+
+  constructor(
+    initParams: YTTParagraphInterface | YTTSpanInterface,
+    parentDocument: YTT
+  ) {
+    super(initParams, parentDocument);
+  }
+};
 
 // YTT Class Member Interfaces
 interface YTTIntermediateFormat {
-  pens: YTTPen[],
-  windowStyles: YTTWindowStyle[],
-  windowPositions: YTTWindowPosition[],
-  paragraphs: YTTParagraph[],
+  pens: YTTPenInterface[],
+  windowStyles: YTTWindowStyleInterface[],
+  windowPositions: YTTWindowPositionInterface[],
+  paragraphs: YTTParagraphInterface[],
 };
 
 interface YTTIndex {
@@ -24,19 +81,27 @@ interface YTTIndex {
 
 // YTT Class
 export default class YTT {
-  pens: YTTPen[];
-  windowStyles: YTTWindowStyle[];
-  windowPositions: YTTWindowPosition[];
-  paragraphs: YTTParagraph[];
-  index: YTTIndex = {};
+  private readonly pens: YTTPen[];
+  private readonly windowStyles: YTTWindowStyle[];
+  private readonly windowPositions: YTTWindowPosition[];
+  private readonly paragraphs: YTTParagraph[];
+  private readonly index: YTTIndex = {};
 
   constructor(intermediate?: YTTIntermediateFormat) {
     if(intermediate) {
-      this.pens = intermediate?.pens.map(pen => new YTTPen(pen, this)) || [];
-      this.windowStyles = intermediate?.windowStyles || [];
-      this.windowPositions = intermediate?.windowPositions || [];
-      this.paragraphs = intermediate?.paragraphs || [];
-      for(const el of [
+      this.pens = intermediate?.pens?.map((pen: YTTPenInterface): YTTPen => {
+        return new YTTPen(pen, this);
+      }) || [];
+      this.windowStyles = intermediate?.windowStyles?.map((windowStyle: YTTWindowStyleInterface): YTTWindowStyle => {
+        return new YTTWindowStyle(windowStyle, this);
+      }) || [];
+      this.windowPositions = intermediate?.windowPositions?.map((windowPosition: YTTWindowPositionInterface): YTTWindowPosition => {
+        return new YTTWindowPosition(windowPosition, this);
+      }) || [];
+      this.paragraphs = intermediate?.paragraphs?.map((paragraph: YTTParagraphInterface): YTTParagraph => {
+        return new YTTParagraph(paragraph, this);
+      }) || [];
+      for(const element of [
         ...this.pens,
         ...this.windowStyles,
         ...this.windowPositions,
@@ -45,8 +110,8 @@ export default class YTT {
           return p.children;
         }).flat(),
       ]) {
-        const uuid = el.uuid || uuidv4();
-        this.index[uuid] = el;
+        const uuid: string = element.uuid || uuidv4();
+        this.index[uuid] = element;
       }
     }
     else {
@@ -57,36 +122,44 @@ export default class YTT {
     }
   }
 
-  add(element: YTTElement): YTT {
+  private add<T extends YTTElement>(element: T, container: T[]): YTT {
+    container.push(element);
+    assert(element.uuid);
+    this.index[element.uuid] = element;
+    return this;
+  }
+
+  private sortByStartTime(container: YTTBodyElement[], asc: boolean = true): YTT {
+    container.sort((a: YTTBodyElement, b: YTTBodyElement): number => {
+      return (a.startTime - b.startTime) * (asc ? 1 : -1);
+    });
+    return this;
+  }
+
+  addHead<T extends YTTHeadElement>(element: T, container: T[]): YTT {
+    this.add<T>(element, container);
+    return this;
+  }
+
+  addBody<T extends YTTBodyElement>(element: T, container: T[]): YTT {
+    this.add<T>(element, container);
+    this.sortByStartTime(container, true);
     return this;
   }
 
   addPen(pen: YTTPen): YTT {
-    this.pens.push(pen);
-    const uuid = pen.uuid || uuidv4();
-    this.index[uuid] = pen;
-    return this;
+    return this.addHead<YTTPen>(pen, this.pens);
   }
 
   addWindowStyle(windowStyle: YTTWindowStyle): YTT {
-    this.windowStyles.push(windowStyle);
-    const uuid = windowStyle.uuid || uuidv4();
-    this.index[uuid] = windowStyle;
-    return this;
+    return this.addHead<YTTWindowStyle>(windowStyle, this.windowStyles);
   }
 
   addWindowPosition(windowPosition: YTTWindowPosition): YTT {
-    this.windowPositions.push(windowPosition);
-    const uuid = windowPosition.uuid || uuidv4();
-    this.index[uuid] = windowPosition;
-    return this;
+    return this.addHead<YTTWindowPosition>(windowPosition, this.windowPositions);
   }
 
   addParagraph(paragraph: YTTParagraph): YTT {
-    this.paragraphs.push(paragraph);
-    const uuid = paragraph.uuid || uuidv4();
-    this.index[uuid] = paragraph;
-    return this;
+    return this.addBody<YTTParagraph>(paragraph, this.paragraphs);
   }
 };
-

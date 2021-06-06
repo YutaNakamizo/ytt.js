@@ -7,6 +7,7 @@
     "strict": true,
     "declaration": true,
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "rootDir": "../src/"
   },
   "include": [
