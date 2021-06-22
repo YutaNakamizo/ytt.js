@@ -1,6 +1,8 @@
-import YTT, {
+import {
+  YTTElement,
   YTTBodyElement,
-} from '../index';
+  YTTBodyElementInterface,
+} from '..';
 import {
   YTTSpan,
   YTTSpanInterface,
@@ -11,26 +13,34 @@ export interface YTTParagraphInterface {
   uuid?: string,
   startTime: number,
   duration: number,
-  penUuid: string,
-  windowStyleUuid: string,
-  windowPositionUuid: string,
-  children: YTTSpanInterface[],
+  children?: YTTBodyElementInterface[],
 };
-export class YTTParagraph extends YTTBodyElement {
-  public readonly type: string = 'ytt#paragraph';
-  public readonly children: YTTSpan[] = [];
 
-  constructor(initParams: YTTParagraphInterface, parentDocument: YTT) {
-    super(initParams, parentDocument);
-    this.children = initParams.children?.map((span: YTTSpanInterface) => {
-      return new YTTSpan(span, this.parentDocument);
-    });
+export class YTTParagraph extends YTTBodyElement {
+  public readonly type: 'ytt#paragraph' = 'ytt#paragraph';
+  public readonly children: YTTBodyElement[] = [];
+
+  constructor(paragraphProps: YTTParagraphInterface) {
+    super(paragraphProps);
+    this.parse(paragraphProps);
   }
 
-  addSpan(span: YTTSpan): YTTParagraph {
-    this.parentDocument.addBody(span, this.children);
-    return this;
-  };
+  private parse(paragraphProps: YTTParagraphInterface): void {
+    for(const child of paragraphProps.children || []) {
+      const element: YTTBodyElement = (() => {
+        switch(child.type) {
+          case 'ytt#paragraph': {
+            return new YTTParagraph(child);
+          }
+          case 'ytt#span': {
+            return new YTTSpan(child);
+          }
+        }
+      })();
+      this.add(element);
+    }
+    return;
+  }
 
   export(): YTTParagraphInterface {
     return {
@@ -38,11 +48,8 @@ export class YTTParagraph extends YTTBodyElement {
       uuid: this.uuid,
       startTime: this.startTime,
       duration: this.duration,
-      penUuid: this.penUuid,
-      windowStyleUuid: this.windowStyleUuid,
-      windowPositionUuid: this.windowPositionUuid,
-      children: this.children.map((span: YTTSpan): YTTSpanInterface => {
-        return span.export();
+      children: this.children.map((child: YTTBodyElement): YTTBodyElementInterface => {
+        return child.export();
       }),
     };
   }

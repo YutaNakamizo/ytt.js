@@ -1,33 +1,33 @@
-import { threadId } from 'worker_threads';
 import {
   YTTElement,
   YTTBodyElement,
   YTTBodyElementInterface,
-} from '..';
+} from "..";
 import {
   YTTParagraph,
   YTTParagraphInterface,
 } from './Paragraph';
+import {
+  YTTSpan,
+  YTTSpanInterface,
+} from './Span';
 
-export interface YTTSpanInterface {
-  type: 'ytt#span',
+export interface YTTRootInterface {
+  type: 'ytt#root',
   uuid?: string,
-  startTime: number,
-  duration: number,
   children?: YTTBodyElementInterface[],
 };
 
-export class YTTSpan extends YTTBodyElement {
-  public readonly type: 'ytt#span' = 'ytt#span';
-  public readonly children: YTTBodyElement[] = [];
+export class YTTRoot extends YTTElement {
+  public readonly type: 'ytt#root' = 'ytt#root';
 
-  constructor(spanProps: YTTSpanInterface) {
-    super(spanProps);
-    this.parse(spanProps);
+  constructor(rootProps?: YTTRootInterface) {
+    super(rootProps);
+    if(rootProps) this.parse(rootProps);
   }
 
-  private parse(spanProps: YTTSpanInterface): void {
-    for(const child of spanProps.children || []) {
+  private parse(rootProps: YTTRootInterface): void {
+    for(const child of rootProps.children || []) {
       const element: YTTBodyElement = (() => {
         switch(child.type) {
           case 'ytt#paragraph': {
@@ -41,17 +41,15 @@ export class YTTSpan extends YTTBodyElement {
       this.add(element);
     }
     return;
-  }
+  };
 
-  export(): YTTSpanInterface {
+  export(): YTTRootInterface {
     return {
-      type: 'ytt#span',
+      type: 'ytt#root',
       uuid: this.uuid,
-      startTime: this.startTime,
-      duration: this.duration,
       children: this.children.map((child: YTTBodyElement): YTTBodyElementInterface => {
         return child.export();
       }),
-    };
+    }
   }
 };
